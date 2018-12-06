@@ -112,39 +112,41 @@ def process_stash(stash, types):
         return []
     item_list = []
     for item in stash.get("items"):
-        useful_item = False
-        for category in types:
-            if category in item.get('category'):
-                useful_item = True
-                print("?")
-                break
+        useful_item = True
+        if item.get('category') in types:
+            useful_item = True
 
         if useful_item:
             desc = ""
             price = ""
             name = ""
-
             if 'note' in item and "~price" in item.get('note'):
                 price_note = item.get('note')
                 quant = re.findall('[0-9]+', price_note)
                 currency = re.findall('[a-z]+', price_note[7:])
-                price = quant[0] + " " + currency[0]
+                amount = ""
+                for q in quant:
+                    amount += q
+                price = amount + " " + currency[0]
 
             if 'identified' not in item or item.get('identified') == False:
                 desc += "Unidentified "
             if 'corrupted' in item:
                 desc += "Corrupted "
                 
+            type = item.get("typeLine")
+            words = re.findall('[A-Z][^A-Z]*', type)
+            for word in words:
+                name += word + ""
+
             if "maps" in item.get('category'):
                 if "properties" in item:
                     tier = item.get('properties')[0].get('values')[0]
-                    desc += "Tier " + str(tier) + " "
-                map_type = item.get("typeLine")
-                words = re.findall('[A-Z][^A-Z]*', map_type)
-                for word in words:
-                    name += word + " "
-                desc += name
+                    desc += "Tier" + str(tier) + ""
 
+            desc += name
+            if price == "":
+                price = stash_price
             item = Item(name, price, desc)
             item_list.append(item)
 
@@ -154,7 +156,7 @@ def item_dumper(item_list, items_to_print):
     for i in range(items_to_print):
         if i < len(item_list):
             item = item_list[i]
-            print(item.getName(), " at ", item.getPrice(), ". ", item.getDescription())
+            print(item.getName(), "at", item.getPrice(), ":", item.getDescription())
 
 collect_api()
             
