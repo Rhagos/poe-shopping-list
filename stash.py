@@ -142,7 +142,7 @@ def process_stash(stash, types):
             if "maps" in item.get('category'):
                 if "properties" in item:
                     tier = item.get('properties')[0].get('values')[0]
-                    desc += "Tier" + str(tier) + ""
+                    desc += "Tier" + str(tier[0]) + ""
 
             desc += name
             if price == "":
@@ -158,7 +158,9 @@ def item_dumper(item_list, items_to_print):
             item = item_list[i]
             print(item.getName(), "at", item.getPrice(), ":", item.getDescription())
 
-collect_api()
+for i in range(20):
+    collect_api()
+
             
 
 
